@@ -21,7 +21,7 @@ function Login() {
     axios.post('http://localhost:8801', values)
       .then(res => {
         if(res.data.Status === "Success"){
-          navigate('/signin')
+          navigate('/')
         }
         else{
           alert("Error")

@@ -87,8 +87,9 @@ app.post('/signin', (req, res) => {
                 }
             })
         }else {
-            return res.json({ Error: err.message });
+            return res.json({ Error: "User not Found" });
         }
+        
     })
 })
 
