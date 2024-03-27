@@ -11,7 +11,7 @@ const saltRounds = 10;
 
 app.use(express.json());
 app.use(cors({
-    origin: ["http://localhost:3003"],
+    origin: ["http://localhost:3000"],
     methods: ["Post", "GET"],
     credentials: true
 })); // Add this line to enable CORS
@@ -81,11 +81,11 @@ app.post('/signin', (req, res) => {
                     return res.json({Status: "Success"});
                 }
                 else{
-                    return({Error: "Password not matched"});
+                    return res.json({Error: "Password or Username is wrong"});
                 }
             })
         }else {
-            return res.json({ Error: "User not Found" });
+            return res.json({ Error: "Password or Username is wrong" });
         }
         
     })

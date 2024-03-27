@@ -22,6 +22,7 @@ function Login() {
       .then(res => {
         if(res.data.Status === "Success"){
           navigate('/')
+          window.alert("Account Created")
         }
         else{
           alert("Error")
@@ -30,23 +31,29 @@ function Login() {
       .catch(err => console.log(err)); // Fix the error handling here
   };
 
+  
+
   return (
     <div className='wrapper'>
       <form onSubmit={handleSubmit} action="">
         <h1>Registration</h1>
         <div className='input-box'>
-          <input type="text" placeholder='Username' name="email" required onChange={handleChange} />
+          <input type="text" placeholder='First Name' name="name" required/>
+        </div>
+        <div className='input-box'>
+          <input type="text" placeholder='Last Name' name="name" required />
+        </div>
+        <div className='input-box'>
+          <input type="text" placeholder='Email' name="email" required onChange={handleChange} />
         </div>
         <div className='input-box'>
           <input type="password" placeholder='Password' name="password" required onChange={handleChange} />
         </div>
         <div className='input-box'>
-          <label>
-            <input type='checkbox' />
-            Remember me
-          </label>
+         
+          <a>Already have an account? <Link to="/signin">Sign in</Link></a>
         </div>
-        <button type='submit'>Login</button>
+        <button type='submit'>Register</button>
       </form>
     </div>
   );

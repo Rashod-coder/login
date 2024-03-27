@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './login.css'; // Use the same CSS file for both login and signin pages for consistent styling.
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate
 
 function Signin() {
   const [values, setValues] = useState({
@@ -47,6 +47,11 @@ function Signin() {
           />
         </div>
         <button type="submit">Sign In</button>
+        <br/>
+        <br/>
+        <a>Don't  have an account? <Link to="/login"> Sign up</Link> </a>
+        
+
       </form>
     </div>
   );
