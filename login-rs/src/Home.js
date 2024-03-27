@@ -10,10 +10,10 @@ function Home() {
   useEffect(() => {
     axios.get('http://localhost:8801/', { withCredentials: true })
       .then(res => {
+        console.log(res.data); 
         if (res.data.Status === "Success") {
-          <h1>Login Success</h1>
           setAuth(true);
-          setName(res.data.name);
+          setName(res.data.name); 
         } else {
           throw new Error('Unauthorized'); 
         }
@@ -23,7 +23,7 @@ function Home() {
         navigate('/signin');
         setTimeout(() => window.alert('You must be logged in to continue.'), 60); 
       });
-  }, []); 
+  }, []);
 
   const handleLogout = () => {
     axios.get('http://localhost:8801/logout', { withCredentials: true })
@@ -50,10 +50,11 @@ function Home() {
   return (
     <div className='container mt-4'>
       <h1>Welcome to the site</h1>
+      
       <div>
         <h2>You are logged in!</h2>
-        <p>Your name: {name}</p>
-        {/* <button onClick={handleLogout}>Logout</button> */}
+        <h3>Hello {name}</h3>
+        <button onClick={handleLogout}>Logout</button>
       </div>
     </div>
   );

@@ -36,7 +36,7 @@ const verifyUser = (req, res, next) =>{
 
             }
             else{
-                req.name = decoded.name;
+                req.firstName = decoded.firstName;
                 next();
             }
         })
@@ -44,7 +44,7 @@ const verifyUser = (req, res, next) =>{
 }
 
 app.get('/', verifyUser ,(req, res) =>{
-    return res.json({Status: "Success", name: req.email})
+    return res.json({Status: "Success", name: req.firstName})
 })
 
 db.connect((err) => {
@@ -57,15 +57,35 @@ db.connect((err) => {
 });
 
 app.post('/', (req, res) => {
-    const sql = "INSERT INTO people (`userEmail`, `password`) VALUES (?, ?)";
-    bcrypt.hash(req.body.password.toString(), saltRounds, (err, hash) => {
-        if (err) return res.json({ Error: "Error hashing password" });
-        db.query(sql, [req.body.email, hash], (err, result) => {
-            if (err) return res.json({ Error: err.message }); 
-            return res.json({ Status: "Success" });
-        });
+    const { email, password, firstName, lastName } = req.body;
+
+    // Check if the email already exists in the database
+    const checkEmailQuery = 'SELECT * FROM people WHERE userEmail = ?';
+    db.query(checkEmailQuery, [email], (err, results) => {
+        if (err) {
+            return res.status(500).json({ Error: 'Database error' });
+        }
+        if (results.length > 0) {
+            return res.status(400).json({ Error: 'Email already exists' });
+        } else {
+            // If the email is unique, proceed with registration
+            bcrypt.hash(password.toString(), saltRounds, (err, hash) => {
+                if (err) {
+                    return res.status(500).json({ Error: 'Error hashing password' });
+                }
+                const insertQuery = 'INSERT INTO people (`userEmail`, `password`, `firstName`, `lastName`) VALUES (?, ?, ?, ?)';
+                db.query(insertQuery, [email, hash, firstName, lastName], (err, result) => {
+                    if (err) {
+                        return res.status(500).json({ Error: 'Error inserting data into database' });
+                    }
+                    return res.json({ Status: 'Success' });
+                });
+            });
+        }
     });
 });
+
+
 
 app.post('/signin', (req, res) => {
     const sql = 'SELECT * FROM people where userEmail = ? ';
@@ -75,21 +95,22 @@ app.post('/signin', (req, res) => {
             bcrypt.compare(req.body.password.toString(), data[0].password, (err, response) => {
                 if (err) return res.json({ Error: err.message }); 
                 if(response){
-                    const name = data[0].email;
-                    const token = jwt.sign({name}, "jwt-secret-key", {expiresIn: '1d'})
+                    const firstName = data[0].firstName; 
+                    const token = jwt.sign({ firstName }, "jwt-secret-key", { expiresIn: '1d' });
                     res.cookie('token', token);
-                    return res.json({Status: "Success"});
+                    return res.json({ Status: "Success", firstName }); // Include firstName in the response
                 }
                 else{
-                    return res.json({Error: "Password or Username is wrong"});
+                    return res.json({ Error: "Password or Username is wrong" });
                 }
             })
-        }else {
+        } else {
             return res.json({ Error: "Password or Username is wrong" });
         }
         
     })
 })
+
 
 
 app.listen(8801, () => {
