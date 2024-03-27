@@ -1,11 +1,9 @@
-// Home.js
-import {Link, useNavigate} from 'react-router-dom'
+import { useEffect, useState } from 'react';
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function Home() {
   const [auth, setAuth] = useState(false);
-  const [message, setMessage] = useState('');
   const [name, setName] = useState('');
   const navigate = useNavigate();
 
@@ -13,19 +11,19 @@ function Home() {
     axios.get('http://localhost:8801/', { withCredentials: true })
       .then(res => {
         if (res.data.Status === "Success") {
+          <h1>Login Success</h1>
           setAuth(true);
           setName(res.data.name);
         } else {
-          setAuth(false);
-          setMessage(res.data.Error || 'Unauthorized');
+          throw new Error('Unauthorized'); 
         }
       })
       .catch(err => {
         console.error('Error fetching data:', err);
-        setMessage('You must be logged in' + err.message);
-        navigate('/')
+        navigate('/signin');
+        setTimeout(() => window.alert('You must be logged in to continue.'), 60); 
       });
-  }, []);
+  }, []); 
 
   const handleLogout = () => {
     axios.get('http://localhost:8801/logout', { withCredentials: true })
@@ -33,30 +31,30 @@ function Home() {
         if (res.data.Status === "Success") {
           setAuth(false);
           setName('');
+          navigate('/signin');
+          setTimeout(() => window.alert('You have logged out please sign in to continue.'), 100); 
+
         } else {
-          setMessage(res.data.Error || 'Logout failed');
+          console.error('Logout failed:', res.data.Error || 'Unknown error');
         }
       })
       .catch(err => {
         console.error('Error logging out:', err);
-        setMessage('An error occurred while logging out: ' + err.message);
       });
   };
+
+  if (!auth) {
+    return null; 
+  }
 
   return (
     <div className='container mt-4'>
       <h1>Welcome to the site</h1>
-      {auth ? (
-        <div>
-          <h2>You are logged in!</h2>
-          <p>Your name: {name}</p>
-          <button onClick={handleLogout}>Logout</button>
-        </div>
-      ) : (
-        <div>
-          <p>{message || 'Please log in to continue.'}</p>
-        </div>
-      )}
+      <div>
+        <h2>You are logged in!</h2>
+        <p>Your name: {name}</p>
+        {/* <button onClick={handleLogout}>Logout</button> */}
+      </div>
     </div>
   );
 }
