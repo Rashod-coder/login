@@ -16,7 +16,7 @@ function Signin() {
     axios.post('http://localhost:8801/signin', values)
       .then(res => {
         if (res.data.Status === "Success") {
-          navigate('/');
+          navigate('/home');
         } else {
           alert(res.data.Error);
         }

@@ -11,7 +11,7 @@ const saltRounds = 10;
 
 app.use(express.json());
 app.use(cors({
-    origin: ["http://localhost:3000"],
+    origin: ["http://localhost:3001"],
     methods: ["Post", "GET"],
     credentials: true
 })); // Add this line to enable CORS
@@ -32,7 +32,7 @@ const verifyUser = (req, res, next) =>{
     else {
         jwt.verify(token, "jwt-secret-key", (err, decoded) => {
             if(err){
-                return res.json({ Error: err.message}); // Return the error message
+                return res.json({ Error: err.message}); 
 
             }
             else{
@@ -44,14 +44,13 @@ const verifyUser = (req, res, next) =>{
 }
 
 app.get('/', verifyUser ,(req, res) =>{
-    return res.json({Status: "Success", name: req.name})
+    return res.json({Status: "Success", name: req.email})
 })
 
 db.connect((err) => {
     if (err) {
         console.error('Error connecting to MySQL database:', err);
-        process.exit(1); // Exit the process if unable to connect to the database
-
+        process.exit(1); 
         return;
     }
     console.log('Connected to MySQL database');
@@ -96,6 +95,11 @@ app.post('/signin', (req, res) => {
 
 app.listen(8801, () => {
     console.log("Running");
+});
+
+app.get('/logout', (req, res) => {
+    res.clearCookie('token');
+    return res.json({ Status: "Success" });
 });
 
 
