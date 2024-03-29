@@ -1,0 +1,17 @@
+.text-link {
+    color: white;
+    font-size: 20px;
+  }
+.dropdown-menu{
+  background-color: rgba(255, 255, 255, 0.389);
+}
+
+@media (max-width: 991px ) {
+  .sidebar{
+    background-color: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur
+  }
+  .dropdown-menu{
+    background-color: rgba(255, 255, 255, 0.15);
+  }
+}

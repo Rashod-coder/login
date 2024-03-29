@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import './login.css'; // Use the same CSS file for both login and signin pages for consistent styling.
+import React, { useState, useEffect  } from 'react';
+import './signin.css'; // Use the same CSS file for both login and signin pages for consistent styling.
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate
 
@@ -11,21 +11,23 @@ function Signin() {
 
   const navigate = useNavigate(); // Define navigate function
   axios.defaults.withCredentials = true;
+  
+  
   const handleSubmit = (event) => {
     event.preventDefault();
     axios.post('http://localhost:8801/signin', values)
       .then(res => {
         if (res.data.Status === "Success") {
-          navigate('/home');
+          navigate('/Dashboard');
         } else {
           alert(res.data.Error);
         }
-      })
-      .catch(err => console.log(err)); // Fix the error handling here
+      })  
+      .catch(err => console.log(err)); 
   };
 
   return (
-    <div className="wrapper"> {/* Use the wrapper class for consistent styling */}
+    <div className="wrapper"> 
       <form onSubmit={handleSubmit}>
         <h1>Sign In</h1>
         <div className="input-box">

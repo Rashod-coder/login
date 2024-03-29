@@ -32,7 +32,6 @@ function Login() {
       })
       .catch(err => {
         if (err.response && err.response.data) {
-          // Check if the error message is about the email already existing
           if (err.response.data.Error === "Email already exists") {
             window.alert("Email is in use please use a different email"); 
           } else {
@@ -66,7 +65,7 @@ function Login() {
         <div className='input-box'>
           <a>Already have an account? <Link to="/signin">Sign in</Link></a>
         </div>
-        <button type='submit'>Register</button>
+        <button type='submit'>Create Account</button>
       </form>
     </div>
   );

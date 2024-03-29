@@ -1,0 +1,8 @@
+.home {
+    justify-content: center;
+    min-height: 100vh; /* Makes sure the wrapper takes up full viewport height */
+    background-image: url('./mateo1.jpg'); /* Set the background image */
+    background-size: cover; /* Cover the entire container with the image */
+    background-position: center; /* Center the image */
+    background-repeat: no-repeat; /* Prevent repeating the image */
+}

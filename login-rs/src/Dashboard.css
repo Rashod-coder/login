@@ -1,0 +1,23 @@
+.body {
+    min-height: 100vh; /* Makes sure the wrapper takes up full viewport height */
+    background-image: url('./mateo1.jpg'); /* Set the background image */
+    background-size: cover; /* Cover the entire container with the image */
+}
+  
+  
+.dashboard-box { 
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.363); /* Semi-transparent white background */
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.546); /* Add a subtle shadow */
+  }
+  
+  /* Center the text inside the box */
+  .dashboard-box h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    color: #569ff8; 
+
+  }

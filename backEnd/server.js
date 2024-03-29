@@ -11,7 +11,7 @@ const saltRounds = 10;
 
 app.use(express.json());
 app.use(cors({
-    origin: ["http://localhost:3000"],
+    origin: ["http://localhost:3001"],
     methods: ["Post", "GET"],
     credentials: true
 })); // Add this line to enable CORS
@@ -37,6 +37,7 @@ const verifyUser = (req, res, next) =>{
             }
             else{
                 req.firstName = decoded.firstName;
+                req.lastName = decoded.lastName; // Set lastName from decoded token
                 next();
             }
         })
@@ -44,7 +45,8 @@ const verifyUser = (req, res, next) =>{
 }
 
 app.get('/', verifyUser ,(req, res) =>{
-    return res.json({Status: "Success", name: req.firstName})
+    return res.json({ Status: "Success", firstName: req.firstName, lastName: req.lastName });
+
 })
 
 db.connect((err) => {
@@ -96,9 +98,10 @@ app.post('/signin', (req, res) => {
                 if (err) return res.json({ Error: err.message }); 
                 if(response){
                     const firstName = data[0].firstName; 
-                    const token = jwt.sign({ firstName }, "jwt-secret-key", { expiresIn: '1d' });
+                    const lastName = data[0].lastName; // Fetch lastName from data
+                    const token = jwt.sign({ firstName, lastName }, "jwt-secret-key", { expiresIn: '1d' });
                     res.cookie('token', token);
-                    return res.json({ Status: "Success", firstName }); // Include firstName in the response
+                    return res.json({ Status: "Success", firstName}); // Include firstName in the response
                 }
                 else{
                     return res.json({ Error: "Password or Username is wrong" });
@@ -110,6 +113,60 @@ app.post('/signin', (req, res) => {
         
     })
 })
+
+
+
+
+// Endpoint to create a new post
+app.post('/create-post', verifyUser, (req, res) => {
+    const { content } = req.body; // Assuming `content` is sent in the request body
+    const userIdQuery = 'SELECT id FROM people WHERE firstName = ? AND lastName = ?'; // Find user ID based on firstName and lastName
+
+    db.query(userIdQuery, [req.firstName, req.lastName], (err, result) => {
+        if (err) {
+            return res.status(500).json({ Error: 'Database error' });
+        }
+        if (result.length > 0) {
+            const userId = result[0].id;
+            const insertPostQuery = 'INSERT INTO posts (userId, content) VALUES (?, ?)';
+            db.query(insertPostQuery, [userId, content], (err, result) => {
+                if (err) {
+                    return res.status(500).json({ Error: 'Error inserting post into database' });
+                }
+                return res.json({ Status: 'Success', Message: 'Post added successfully' });
+            });
+        } else {
+            return res.status(404).json({ Error: 'User not found' });
+        }
+    });
+});
+
+// Endpoint to get all posts
+app.get('/posts', (req, res) => {
+    const selectAllPostsQuery = 'SELECT p.content, pe.firstName, pe.lastName, p.createdAt FROM posts p JOIN people pe ON p.userId = pe.id ORDER BY p.createdAt DESC';
+
+    db.query(selectAllPostsQuery, (err, results) => {
+        if (err) {
+            return res.status(500).json({ Error: 'Database error' });
+        }
+        res.json(results);
+    });
+});
+
+// Endpoint to get posts by a specific user (identified by user ID in this case)
+app.get('/posts/:userId', (req, res) => {
+    const userId = req.params.userId;
+    const selectUserPostsQuery = 'SELECT content, createdAt FROM posts WHERE userId = ? ORDER BY createdAt DESC';
+
+    db.query(selectUserPostsQuery, [userId], (err, results) => {
+        if (err) {
+            return res.status(500).json({ Error: 'Database error' });
+        }
+        res.json(results);
+    });
+});
+
+
 
 
 
